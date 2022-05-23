@@ -46,6 +46,10 @@ public class Main {
 		    JSONObject takeKeyForWind = (JSONObject) jsonObject.get("wind");
 		    double speed = (Double) takeKeyForWind.get("speed");
 		    
+		    System.out.println(temperature);
+		    System.out.println(humidity);
+		    System.out.println(speed);
+		    
 		    //--to do να παρουμε key:weather, value:"Clouds"--//
 			
 		} catch (IOException | InterruptedException e) {
