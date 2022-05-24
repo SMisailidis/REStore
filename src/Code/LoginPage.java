@@ -17,13 +17,17 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
+import java.awt.Color;
+import java.awt.GridLayout;
 //import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class LoginPage extends JFrame implements ActionListener{
 
-	private JPanel panel;
+	private JPanel generalPanel;
+	private JPanel fieldsPanel;
+	private JLabel loginLabel;
 	private JLabel nameLabel;
 	private JLabel passwdLabel;
 	private JTextField nameField;
@@ -35,7 +39,9 @@ public class LoginPage extends JFrame implements ActionListener{
 		
 	public LoginPage()
 	{
-		panel = new JPanel();
+		generalPanel = new JPanel(null);
+		fieldsPanel = new JPanel(new GridLayout(2,2));
+		loginLabel = new JLabel("Login to your Database");
 		nameLabel = new JLabel("Username:");
 		passwdLabel = new JLabel("Password:");
 		nameField = new JTextField(12);
@@ -43,25 +49,31 @@ public class LoginPage extends JFrame implements ActionListener{
 		loginButton = new JButton("Login");
 		registerButton = new JButton("Register");
 		checkbox = new JCheckBox();
-		//checkbox.setBackground(new Color(245, 226, 171));
-		//checkbox.setBounds(260,15,50,50);
+		checkbox.setBounds(260,15,50,50);
 		
-		panel.add(nameLabel);
-		panel.add(nameField);
-		panel.add(passwdLabel);
-		panel.add(passwdField);
-		panel.add(checkbox);
-		panel.add(registerButton);
-		panel.add(loginButton);
+		fieldsPanel.add(nameLabel);
+		fieldsPanel.add(nameField);
+		fieldsPanel.add(passwdLabel);
+		fieldsPanel.add(passwdField);
+		fieldsPanel.setBounds(15,7,240,45);
 
+		//Adding items to the generalPanel.
+		generalPanel.add(loginLabel);
+		generalPanel.add(fieldsPanel);
+		generalPanel.add(checkbox);
+		generalPanel.add(loginButton);
+		generalPanel.add(registerButton);
+		registerButton.setBounds(50,70,85,25);
+		loginButton.setBounds(145,70,85,25);
+		
 		loginButton.addActionListener(this);
 		registerButton.addActionListener(this);
 		checkbox.addActionListener(this);
 		
-		this.setContentPane(panel);
+		this.setContentPane(generalPanel);
 		this.setVisible(true);
 		this.setTitle("Login");
-		this.setSize(250, 150);
+		this.setSize(300, 150);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

@@ -1,9 +1,8 @@
 package Code;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
-//import org.json.simple.JSONArray;
+import org.json.simple.JSONArray;
 //import org.json.simple.parser.ParseException;
 //import org.json.simple.parser.JSONParser;
 import java.io.IOException;
@@ -19,6 +18,12 @@ import java.net.http.HttpResponse;
 
 public class WeatherAPI {
 
+	private double temperature;
+	private Long humidity;
+	private Long windspeed;
+	private String weatherDescription;
+	private String weatherCondition;
+	
 	public WeatherAPI()
 	{
 		//Our request to the API.
@@ -42,30 +47,20 @@ public class WeatherAPI {
 			data = data.substring(1, data.length() -1);
 			data = data.substring(1);			
 
-			
 		    JSONObject jsonObject = (JSONObject) JSONValue.parse(data);
 		    
 		    //--We take temperature and humidity--//
-		    
 		    JSONObject takeKeyForTemp = (JSONObject) jsonObject.get("main");
-		    double temperature = (Double) takeKeyForTemp.get("temp");
-		    Long humidity = (Long) takeKeyForTemp.get("humidity");
+		    temperature = (Double) takeKeyForTemp.get("temp");
+		    temperature = (temperature - 32) * 0.5556;
+		    humidity = (Long) takeKeyForTemp.get("humidity");
 		    
-		    //-----------------------------------//
-
 		    
 		    //--We take beaufort--//
-		    
 		    JSONObject takeKeyForWind = (JSONObject) jsonObject.get("wind");
-		    double speed = (Double) takeKeyForWind.get("speed");
+		    windspeed = (Long) takeKeyForWind.get("speed");
 		    
-		    //--------------------//
-		    
-		    
-		    int celsius = (((int)temperature - 32)*5)/9; //Convert Fahrenheit to celsius
-		    
-		    //--We take the description and the current weather conditions--//
-		    
+		    //We take Weather description and weather condition--//
 		    JSONArray weatherDetailsArray = (JSONArray) jsonObject.get("weather");
 		    
 		    String temp = weatherDetailsArray.toString();
@@ -73,24 +68,33 @@ public class WeatherAPI {
 		    
 		    JSONObject weatherObject = (JSONObject) JSONValue.parse(temp);
 		    
-		    String weatherDescription = (String) weatherObject.get("description");
-		    String weatherCondition = (String) weatherObject.get("main");
-		    
-		    //--------------------------------------------------------------//
-		    
-		    //--PrintInfo--//
-		    System.out.println("The current temperature in Fahrenheit: " + temperature);
-		    System.out.println("The current temperature in Celsius: " + celsius);
-		    System.out.println("The current Humidity is: " + humidity);
-		    System.out.println("The current Wind speed is: " + speed);
-		    System.out.println("The current Weather Condition is: " + weatherCondition);
-		    System.out.println("The current Weather Description is: " + weatherDescription);
-		    //-------------//
+		    weatherDescription = (String) weatherObject.get("description");
+		    weatherCondition = (String) weatherObject.get("main");
 			
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		} 
 		
+	}
+
+	public double getTemperature() {
+		return temperature;
+	}
+
+	public long getHumidity() {
+		return humidity;
+	}
+
+	public Long getWindspeed() {
+		return windspeed;
+	}
+
+	public String getWeatherDescription() {
+		return weatherDescription;
+	}
+
+	public String getWeatherCondition() {
+		return weatherCondition;
 	}
 	
 }
