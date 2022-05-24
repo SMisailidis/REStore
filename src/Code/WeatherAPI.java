@@ -1,5 +1,6 @@
 package Code;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 //import org.json.simple.JSONArray;
@@ -41,23 +42,50 @@ public class WeatherAPI {
 			data = data.substring(1, data.length() -1);
 			data = data.substring(1);			
 
+			
 		    JSONObject jsonObject = (JSONObject) JSONValue.parse(data);
 		    
 		    //--We take temperature and humidity--//
+		    
 		    JSONObject takeKeyForTemp = (JSONObject) jsonObject.get("main");
 		    double temperature = (Double) takeKeyForTemp.get("temp");
 		    Long humidity = (Long) takeKeyForTemp.get("humidity");
 		    
+		    //-----------------------------------//
+
 		    
 		    //--We take beaufort--//
+		    
 		    JSONObject takeKeyForWind = (JSONObject) jsonObject.get("wind");
 		    double speed = (Double) takeKeyForWind.get("speed");
 		    
-		    System.out.println(temperature);
-		    System.out.println(humidity);
-		    System.out.println(speed);
+		    //--------------------//
 		    
-		    //--TODO: Take key:weather, value:"Clouds"--//
+		    
+		    int celsius = (((int)temperature - 32)*5)/9; //Convert Fahrenheit to celsius
+		    
+		    //--We take the description and the current weather conditions--//
+		    
+		    JSONArray weatherDetailsArray = (JSONArray) jsonObject.get("weather");
+		    
+		    String temp = weatherDetailsArray.toString();
+		    temp = temp.substring(1, temp.length() -1);
+		    
+		    JSONObject weatherObject = (JSONObject) JSONValue.parse(temp);
+		    
+		    String weatherDescription = (String) weatherObject.get("description");
+		    String weatherCondition = (String) weatherObject.get("main");
+		    
+		    //--------------------------------------------------------------//
+		    
+		    //--PrintInfo--//
+		    System.out.println("The current temperature in Fahrenheit: " + temperature);
+		    System.out.println("The current temperature in Celsius: " + celsius);
+		    System.out.println("The current Humidity is: " + humidity);
+		    System.out.println("The current Wind speed is: " + speed);
+		    System.out.println("The current Weather Condition is: " + weatherCondition);
+		    System.out.println("The current Weather Description is: " + weatherDescription);
+		    //-------------//
 			
 		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
