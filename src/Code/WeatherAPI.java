@@ -14,13 +14,14 @@ import java.net.http.HttpResponse;
 //import java.io.IOException;
 //import java.net.URI;
 //import java.net.http.*;
-
+import java.lang.Math.*;
 
 public class WeatherAPI {
 
 	private double temperature;
 	private Long humidity;
-	private Long windspeed;
+	private Double windspeedDouble = null;
+	private Long windspeedLong = null;
 	private String weatherDescription;
 	private String weatherCondition;
 	
@@ -39,6 +40,9 @@ public class WeatherAPI {
 		HttpResponse<String> response;
 		
 		try {
+			
+			double beaufort;
+			
 			response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
 			String data = response.body();
@@ -58,7 +62,20 @@ public class WeatherAPI {
 		    
 		    //--We take beaufort--//
 		    JSONObject takeKeyForWind = (JSONObject) jsonObject.get("wind");
-		    windspeed = (Long) takeKeyForWind.get("speed");
+		    if(takeKeyForWind.get("speed") instanceof Double)
+		    {
+		    	windspeedDouble = (Double) takeKeyForWind.get("speed");
+		    	beaufort = windspeedDouble = Math.cbrt(Math.pow(windspeedDouble / 1.625, 2));
+		    	windspeedLong = null;
+		    	System.out.println(beaufort);
+		    }
+		    else if(takeKeyForWind.get("speed") instanceof Long)
+		    {
+		    	windspeedLong = (Long) takeKeyForWind.get("speed");
+		    	windspeedDouble = null;
+		    	beaufort = (long) Math.cbrt(Math.pow(windspeedLong / 1.625, 2));
+		    	System.out.println(beaufort);
+		    }
 		    
 		    //We take Weather description and weather condition--//
 		    JSONArray weatherDetailsArray = (JSONArray) jsonObject.get("weather");
@@ -85,10 +102,13 @@ public class WeatherAPI {
 		return humidity;
 	}
 
-	public Long getWindspeed() {
-		return windspeed;
-	}
+    public Double getWindspeedDouble() {
+    	return windspeedDouble;
+    }
 
+    public Long getWindspeedLong() {
+    	return windspeedLong;
+    }
 	public String getWeatherDescription() {
 		return weatherDescription;
 	}

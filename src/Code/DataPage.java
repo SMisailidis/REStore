@@ -1,5 +1,8 @@
 package Code;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -55,13 +58,25 @@ public class DataPage extends JFrame {
 		generalPanel.add(weatherDescField);
 		generalPanel.add(animationLabel);
 		
-		WeatherAPI weather = new WeatherAPI();
 		
-		temperatureField.setText(String.format("%.1f", weather.getTemperature()) + "C");
-		humidityField.setText(Long.toString(weather.getHumidity()));
-		beaufortField.setText(Long.toString(weather.getWindspeed())); //it was Double.
-		weatherDescField.setText(weather.getWeatherDescription());
-		weatherCondField.setText(weather.getWeatherCondition());
+		Timer timer = new Timer ();
+		TimerTask hourlyTask = new TimerTask () {
+		    @Override
+		    public void run () {
+		    	WeatherAPI weather = new WeatherAPI(); 
+		    	temperatureField.setText(String.format("%.1f", weather.getTemperature()) + "C");
+				humidityField.setText(Long.toString(weather.getHumidity())+"%");
+				if(weather.getWindspeedDouble() != null)
+					beaufortField.setText(String.format("%.1f", weather.getWindspeedDouble())); //it was Double.
+				if(weather.getWindspeedLong() != null)
+					beaufortField.setText(String.format("%.1f", weather.getWindspeedLong()));
+				weatherDescField.setText(weather.getWeatherDescription());
+				weatherCondField.setText(weather.getWeatherCondition());
+		    }
+		};
+		// schedule the task to run starting now and then every hour...
+		timer.schedule (hourlyTask, 0l, 1000*60*2);
+		
 		
 		this.setContentPane(generalPanel);
 		this.setVisible(true);
