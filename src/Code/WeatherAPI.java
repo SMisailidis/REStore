@@ -3,18 +3,12 @@ package Code;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.JSONArray;
-//import org.json.simple.parser.ParseException;
-//import org.json.simple.parser.JSONParser;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-//import java.util.Map;
-//import java.io.IOException;
-//import java.net.URI;
-//import java.net.http.*;
-import java.lang.Math.*;
+//import java.lang.Math.*;
 
 public class WeatherAPI {
 
@@ -67,14 +61,12 @@ public class WeatherAPI {
 		    	windspeedDouble = (Double) takeKeyForWind.get("speed");
 		    	beaufort = windspeedDouble = Math.cbrt(Math.pow(windspeedDouble / 1.625, 2));
 		    	windspeedLong = null;
-		    	System.out.println(beaufort);
 		    }
 		    else if(takeKeyForWind.get("speed") instanceof Long)
 		    {
 		    	windspeedLong = (Long) takeKeyForWind.get("speed");
 		    	windspeedDouble = null;
 		    	beaufort = (long) Math.cbrt(Math.pow(windspeedLong / 1.625, 2));
-		    	System.out.println(beaufort);
 		    }
 		    
 		    //We take Weather description and weather condition--//

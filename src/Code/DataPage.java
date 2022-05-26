@@ -9,9 +9,13 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import java.awt.GridLayout;
+
 public class DataPage extends JFrame {
 	
 	private JPanel generalPanel;
+	private JLabel apiLabel;
+	private JPanel apiPanel;
 	private JLabel temperatureLabel;
 	private JTextField temperatureField;
 	private JLabel humidityLabel;
@@ -24,9 +28,20 @@ public class DataPage extends JFrame {
 	private JTextField weatherCondField;
 	private JLabel animationLabel;
 	
+	private JLabel sensorsLabel;
+	private JPanel sensorsPanel;
+	private JLabel temperatureSLabel;
+	private JTextField temperatureSField;
+	private JLabel humiditySLabel;
+	private JTextField humiditySField;
+	private JLabel beaufortSLabel;
+	private JTextField beaufortSField;
+	
 	public DataPage()
 	{
-		generalPanel = new JPanel();
+		generalPanel = new JPanel(null);
+		apiPanel = new JPanel();
+		apiLabel = new JLabel("API Data");
 		temperatureLabel = new JLabel("Temperature:");
 		temperatureField = new JTextField(7);
 		temperatureField.setEditable(false);
@@ -43,21 +58,53 @@ public class DataPage extends JFrame {
 		weatherCondField = new JTextField(7);
 		weatherCondField.setEditable(false);
 		
+		sensorsLabel = new JLabel("Sensors Data");
+		sensorsPanel = new JPanel();
+		temperatureSLabel = new JLabel("Temperature:");
+		temperatureSField = new JTextField(7);
+		temperatureSField.setEditable(false);
+		humiditySLabel = new JLabel("Humidity:");
+		humiditySField = new JTextField(7);
+		humiditySField.setEditable(false);
+		beaufortSLabel = new JLabel("Beaufort:");
+		beaufortSField = new JTextField(7);
+		beaufortSField.setEditable(false);
+		
 		animationLabel = new JLabel();
 		animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
 		
-		generalPanel.add(temperatureLabel);
-		generalPanel.add(temperatureField);
-		generalPanel.add(humidityLabel);
-		generalPanel.add(humidityField);
-		generalPanel.add(beaufortLabel);
-		generalPanel.add(beaufortField);
-		generalPanel.add(weatherCondLabel);
-		generalPanel.add(weatherCondField);
-		generalPanel.add(weatherDescLabel);
-		generalPanel.add(weatherDescField);
-		generalPanel.add(animationLabel);
+		//Adding GUI Items to the API Panel.
+		apiPanel.add(temperatureLabel);
+		apiPanel.add(temperatureField);
+		apiPanel.add(humidityLabel);
+		apiPanel.add(humidityField);
+		apiPanel.add(beaufortLabel);
+		apiPanel.add(beaufortField);
+		apiPanel.add(weatherCondLabel);
+		apiPanel.add(weatherCondField);
+		apiPanel.add(weatherDescLabel);
+		apiPanel.add(weatherDescField);
 		
+		//Adding GUI Items to the Sensors Panel.
+		sensorsPanel.add(temperatureSLabel);
+		sensorsPanel.add(temperatureSField);
+		sensorsPanel.add(humiditySLabel);
+		sensorsPanel.add(humiditySField);
+		sensorsPanel.add(beaufortSLabel);
+		sensorsPanel.add(beaufortSField);
+
+		//Adding GUI Items to the General Panel.
+		apiLabel.setBounds(420,5,50,25);
+		generalPanel.add(apiLabel);
+		apiPanel.setBounds(5,35,900,25);
+		generalPanel.add(apiPanel);
+		sensorsLabel.setBounds(405,90,80,25);
+		generalPanel.add(sensorsLabel);
+		sensorsPanel.setBounds(200,120,500,25);
+		generalPanel.add(sensorsPanel);
+		animationLabel.setBounds(360,200,179,299);
+		generalPanel.add(animationLabel);
+
 		
 		Timer timer = new Timer ();
 		TimerTask hourlyTask = new TimerTask () {
@@ -80,8 +127,8 @@ public class DataPage extends JFrame {
 		
 		this.setContentPane(generalPanel);
 		this.setVisible(true);
-		this.setTitle("Login");
-		this.setSize(360, 450);
+		this.setTitle("Data Page");
+		this.setSize(930, 600);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
