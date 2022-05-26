@@ -114,7 +114,7 @@ public class DataPage extends JFrame {
 		    	temperatureField.setText(String.format("%.1f", weather.getTemperature()) + "C");
 				humidityField.setText(Long.toString(weather.getHumidity())+"%");
 				if(weather.getWindspeedDouble() != null)
-					beaufortField.setText(String.format("%.1f", weather.getWindspeedDouble())); //it was Double.
+					beaufortField.setText(String.format("%.1f", weather.getWindspeedDouble()));
 				if(weather.getWindspeedLong() != null)
 					beaufortField.setText(String.format("%.1f", weather.getWindspeedLong()));
 				weatherDescField.setText(weather.getWeatherDescription());
