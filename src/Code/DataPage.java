@@ -3,6 +3,8 @@ package Code;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -41,6 +43,15 @@ public class DataPage extends JFrame {
 	private JLabel beaufortSLabel;
 	private JTextField beaufortSField;
 	
+	private JLabel decisionLabel;
+	private JPanel decisionPanel;
+	private JLabel temperatureDLabel;
+	private JTextField temperatureDField;
+	private JLabel humidityDLabel;
+	private JTextField humidityDField;
+	private JLabel beaufortDLabel;
+	private JTextField beaufortDField;
+	
 	double data[][] = null;
 	
 	public DataPage()
@@ -76,9 +87,21 @@ public class DataPage extends JFrame {
 		beaufortSField = new JTextField(7);
 		beaufortSField.setEditable(false);
 		
+		decisionLabel = new JLabel("Decision Data");
+		decisionPanel = new JPanel();
+		temperatureDLabel = new JLabel("Temperature:");
+		temperatureDField = new JTextField(7);
+		temperatureDField.setEditable(false);
+		humidityDLabel = new JLabel("Humidity:");
+		humidityDField = new JTextField(7);
+		humidityDField.setEditable(false);
+		beaufortDLabel = new JLabel("Beaufort:");
+		beaufortDField = new JTextField(7);
+		beaufortDField.setEditable(false);
+		
 		animationLabel = new JLabel();
-		//animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
-		animationLabel.setIcon(new ImageIcon("C:\\Users\\Lenovo\\Desktop\\TSworkspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
+		animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
+		//animationLabel.setIcon(new ImageIcon("C:\\Users\\Lenovo\\Desktop\\TSworkspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
 		
 		//Adding GUI Items to the API Panel.
 		apiPanel.add(temperatureLabel);
@@ -99,6 +122,14 @@ public class DataPage extends JFrame {
 		sensorsPanel.add(humiditySField);
 		sensorsPanel.add(beaufortSLabel);
 		sensorsPanel.add(beaufortSField);
+		
+		//Adding GUI Items to the Decision Panel.
+		decisionPanel.add(temperatureDLabel);
+		decisionPanel.add(temperatureDField);
+		decisionPanel.add(humidityDLabel);
+		decisionPanel.add(humidityDField);
+		decisionPanel.add(beaufortDLabel);
+		decisionPanel.add(beaufortDField);
 
 		//Adding GUI Items to the General Panel.
 		apiLabel.setBounds(420,5,50,25);
@@ -109,29 +140,17 @@ public class DataPage extends JFrame {
 		generalPanel.add(sensorsLabel);
 		sensorsPanel.setBounds(200,120,500,25);
 		generalPanel.add(sensorsPanel);
-		animationLabel.setBounds(360,200,179,299);
+		decisionLabel.setBounds(405,170,80,25);
+		generalPanel.add(decisionLabel);
+		decisionPanel.setBounds(200,200,500,25);
+		generalPanel.add(decisionPanel);
+		
+		animationLabel.setBounds(360,280,179,299);
 		generalPanel.add(animationLabel);
 
 		
-		Timer timer = new Timer ();
-		TimerTask hourlyTask = new TimerTask () {
-		    @Override
-		    public void run () {
-		    	WeatherAPI weather = new WeatherAPI(); 
-		    	temperatureField.setText(String.format("%.1f", weather.getTemperature()) + "C");
-				humidityField.setText(Long.toString(weather.getHumidity())+"%");
-				if(weather.getWindspeedDouble() != null)
-					beaufortField.setText(String.format("%.1f", weather.getWindspeedDouble()));
-				if(weather.getWindspeedLong() != null)
-					beaufortField.setText(String.format("%.1f", weather.getWindspeedLong()));
-				weatherDescField.setText(weather.getWeatherDescription());
-				weatherCondField.setText(weather.getWeatherCondition());
-		    }
-		};
-		// schedule the task to run starting now and then every 2 minutes...
-		timer.schedule (hourlyTask, 0l, 1000*60*2);
 		
-		//Sensor timer
+		//Reading Sensor Data.
 		try {
             ObjectInputStream in = new ObjectInputStream(new FileInputStream("sensors.ser"));
             
@@ -141,12 +160,33 @@ public class DataPage extends JFrame {
             exc1.printStackTrace();
         }catch(ClassNotFoundException exc2) {
             exc2.printStackTrace();
-        }
+        }		
 		
+		//Weather API Timer.
+		Timer timer = new Timer ();
+		TimerTask hourlyTask = new TimerTask () {
+		    @Override
+		    public void run () {
+		    	WeatherAPI weather = new WeatherAPI(); 
+		    	temperatureField.setText(String.format("%.1f", weather.getTemperature()));
+				humidityField.setText(Long.toString(weather.getHumidity()));
+				if(weather.getWindspeedDouble() != null)
+					beaufortField.setText(String.format("%.1f", weather.getWindspeedDouble()));
+				if(weather.getWindspeedLong() != null)
+					beaufortField.setText(String.format("%.1f", weather.getWindspeedLong()));
+				weatherDescField.setText(weather.getWeatherDescription());
+				weatherCondField.setText(weather.getWeatherCondition());
+		    }
+		};
+		// schedule the task to run starting now and then every 2 minutes...
+		timer.schedule (hourlyTask, 01, 1000*60*2);
+		
+		
+		//Sensor Timer
 		Timer timerS = new Timer ();
 		TimerTask timerTaskS = new TimerTask() {
-
 			int i=0;
+			@Override
 			public void run() {
 				if(i<data.length)
 				{
@@ -155,22 +195,46 @@ public class DataPage extends JFrame {
 					beaufortSField.setText(Double.toString(data[i][2]));
 					i++;
 				}
-			}
-			
+				try {
+					Thread.sleep(1500);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				
+				/*-----------Fixing any deviations between API's Data and Sensors Data.-----------*/
+				
+				//Checking Deviation for temperature
+				if(Math.abs(Double.parseDouble(temperatureField.getText()) - Double.parseDouble(temperatureSField.getText())) > 3)
+					temperatureDField.setText(temperatureSField.getText());
+				else
+					temperatureDField.setText(temperatureField.getText());
+				
+				//Checking Deviation for humidity.
+				if(Math.abs(Double.parseDouble(humidityField.getText()) - Double.parseDouble(humiditySField.getText())) > 7)
+					humidityDField.setText(humiditySField.getText());
+				else
+					humidityDField.setText(humidityField.getText());
+					
+				//Checking Deviation for beaufort.
+				if(Math.abs(Double.parseDouble(beaufortField.getText()) - Double.parseDouble(beaufortSField.getText())) > 1)
+					beaufortDField.setText(beaufortSField.getText());
+				else
+					beaufortDField.setText(beaufortField.getText());
+			}	
 		};
-		
 		// schedule the task to run starting now and then every 1 minute...
-		timerS.schedule (timerTaskS, 0l, 1000*60*1);
+		timerS.schedule (timerTaskS, 01, 1000*60*1);
 		
 		
+		
+		//About Window.
 		this.setContentPane(generalPanel);
 		this.setVisible(true);
-		this.setTitle("Data Page");
-		this.setSize(930, 600);
+		this.setTitle("REStore");
+		this.setSize(930, 700);
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	}
+	}	
 
 }
-
