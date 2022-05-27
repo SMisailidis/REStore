@@ -191,7 +191,7 @@ public class DataPage extends JFrame {
 				if(i<data.length)
 				{
 					temperatureSField.setText(Double.toString(data[i][0]));
-					humiditySField.setText(Double.toString(data[i][1]));
+					humiditySField.setText(String.format("%.0f", data[i][1]));
 					beaufortSField.setText(Double.toString(data[i][2]));
 					i++;
 				}
@@ -235,6 +235,7 @@ public class DataPage extends JFrame {
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setIconImage(new ImageIcon(this.getClass().getResource("/Photos/logo.png")).getImage());
 	}	
 
 }
