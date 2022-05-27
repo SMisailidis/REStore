@@ -49,7 +49,14 @@ public class WeatherAPI {
 		    
 		    //--We take temperature and humidity--//
 		    JSONObject takeKeyForTemp = (JSONObject) jsonObject.get("main");
-		    temperature = (Double) takeKeyForTemp.get("temp");
+
+		    if(takeKeyForTemp.get("temp") instanceof Double) {
+		    	temperature = (Double) takeKeyForTemp.get("temp");
+		    }
+		    else if (takeKeyForTemp.get("temp") instanceof Long) {
+		    	temperature = (Long) takeKeyForTemp.get("temp");
+		    }
+		    
 		    temperature = (temperature - 32) * 0.5556;
 		    humidity = (Long) takeKeyForTemp.get("humidity");
 		    

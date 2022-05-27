@@ -1,5 +1,6 @@
 package Code;
 
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -10,6 +11,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import java.awt.GridLayout;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 
 public class DataPage extends JFrame {
 	
@@ -36,6 +40,8 @@ public class DataPage extends JFrame {
 	private JTextField humiditySField;
 	private JLabel beaufortSLabel;
 	private JTextField beaufortSField;
+	
+	double data[][] = null;
 	
 	public DataPage()
 	{
@@ -71,7 +77,8 @@ public class DataPage extends JFrame {
 		beaufortSField.setEditable(false);
 		
 		animationLabel = new JLabel();
-		animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
+		//animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
+		animationLabel.setIcon(new ImageIcon("C:\\Users\\Lenovo\\Desktop\\TSworkspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
 		
 		//Adding GUI Items to the API Panel.
 		apiPanel.add(temperatureLabel);
@@ -121,8 +128,39 @@ public class DataPage extends JFrame {
 				weatherCondField.setText(weather.getWeatherCondition());
 		    }
 		};
-		// schedule the task to run starting now and then every hour...
+		// schedule the task to run starting now and then every 2 minutes...
 		timer.schedule (hourlyTask, 0l, 1000*60*2);
+		
+		//Sensor timer
+		try {
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream("sensors.ser"));
+            
+            data = (double[][]) in.readObject();
+            in.close();
+        }catch(IOException exc1) {
+            exc1.printStackTrace();
+        }catch(ClassNotFoundException exc2) {
+            exc2.printStackTrace();
+        }
+		
+		Timer timerS = new Timer ();
+		TimerTask timerTaskS = new TimerTask() {
+
+			int i=0;
+			public void run() {
+				if(i<data.length)
+				{
+					temperatureSField.setText(Double.toString(data[i][0]));
+					humiditySField.setText(Double.toString(data[i][1]));
+					beaufortSField.setText(Double.toString(data[i][2]));
+					i++;
+				}
+			}
+			
+		};
+		
+		// schedule the task to run starting now and then every 1 minute...
+		timerS.schedule (timerTaskS, 0l, 1000*60*1);
 		
 		
 		this.setContentPane(generalPanel);
@@ -135,3 +173,4 @@ public class DataPage extends JFrame {
 	}
 
 }
+
