@@ -152,8 +152,7 @@ public class DataPage extends JFrame {
 		
 		//Reading Sensor Data.
 		try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream("sensors.ser"));
-            
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream("sensors.ser"));    
             data = (double[][]) in.readObject();
             in.close();
         }catch(IOException exc1) {
@@ -200,6 +199,8 @@ public class DataPage extends JFrame {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				
+				
 				
 				/*-----------Fixing any deviations between API's Data and Sensors Data.-----------*/
 				
