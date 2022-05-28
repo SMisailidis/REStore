@@ -161,8 +161,7 @@ public class DataPage extends JFrame {
 		
 		//Reading Sensor Data.
 		try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream("sensors.ser"));
-            
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream("sensors.ser"));    
             data = (double[][]) in.readObject();
             in.close();
         }catch(IOException exc1) {
@@ -202,7 +201,7 @@ public class DataPage extends JFrame {
 				if(i<data.length)
 				{
 					temperatureSField.setText(Double.toString(data[i][0]));
-					humiditySField.setText(Double.toString(data[i][1]));
+					humiditySField.setText(String.format("%.0f", data[i][1]));
 					beaufortSField.setText(Double.toString(data[i][2]));
 					brightnessSField.setText(Double.toString(data[i][3]));
 					i++;
@@ -212,6 +211,8 @@ public class DataPage extends JFrame {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
+				
+				
 				
 				/*-----------Fixing any deviations between API's Data and Sensors Data.-----------*/
 							
@@ -280,6 +281,7 @@ public class DataPage extends JFrame {
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setIconImage(new ImageIcon(this.getClass().getResource("/Photos/logo.png")).getImage());
 	}	
 
 }
