@@ -56,6 +56,7 @@ public class DataPage extends JFrame {
 	
 	
 	double data[][] = null;
+	double beaufortToKnots;
 	double productivitySolar;
 	double productivityWind;
 	
@@ -161,7 +162,8 @@ public class DataPage extends JFrame {
 		
 		//Reading Sensor Data.
 		try {
-            ObjectInputStream in = new ObjectInputStream(new FileInputStream("sensors.ser"));    
+            ObjectInputStream in = new ObjectInputStream(new FileInputStream("sensors.ser"));
+            
             data = (double[][]) in.readObject();
             in.close();
         }catch(IOException exc1) {
@@ -192,7 +194,7 @@ public class DataPage extends JFrame {
 		
 		
 		TimerTask timerTaskS = new TimerTask() {
-			int i=0;
+			int i=-1;
 			@Override
 			public void run() {
 				
@@ -200,11 +202,12 @@ public class DataPage extends JFrame {
 				
 				if(i<data.length)
 				{
-					temperatureSField.setText(Double.toString(data[i][0]));
-					humiditySField.setText(String.format("%.0f", data[i][1]));
-					beaufortSField.setText(Double.toString(data[i][2]));
-					brightnessSField.setText(Double.toString(data[i][3]));
 					i++;
+					temperatureSField.setText(Double.toString(data[i][0]));
+					humiditySField.setText(Double.toString(data[i][1]));
+					beaufortSField.setText(Integer.toString((int) Math.round(Math.cbrt(Math.pow(data[i][2] / 1.625, 2)))));
+					brightnessSField.setText(Double.toString(data[i][3]));
+					
 				}
 				try {
 					Thread.sleep(1500);
@@ -217,8 +220,10 @@ public class DataPage extends JFrame {
 				/*-----------Fixing any deviations between API's Data and Sensors Data.-----------*/
 							
 				//Checking Deviation for temperature
-				if(Math.abs(Double.parseDouble(temperatureField.getText()) - Double.parseDouble(temperatureSField.getText())) > 3)
+				if(Math.abs(Double.parseDouble(temperatureField.getText()) - Double.parseDouble(temperatureSField.getText())) > 3) {
 					temperatureDField.setText(temperatureSField.getText());
+					
+				}	
 				else
 					temperatureDField.setText(temperatureField.getText());
 				
@@ -229,43 +234,73 @@ public class DataPage extends JFrame {
 					humidityDField.setText(humidityField.getText());
 					
 				//Checking Deviation for beaufort.
-				if(Math.abs(Double.parseDouble(beaufortField.getText()) - Double.parseDouble(beaufortSField.getText())) > 1)
+				if(Math.abs(Double.parseDouble(beaufortField.getText()) - Double.parseDouble(beaufortSField.getText())) > 1) {
 					beaufortDField.setText(beaufortSField.getText());
-				else
+					beaufortToKnots = data[i][2];
+				}	
+				else {
 					beaufortDField.setText(beaufortField.getText());
+					if(weather.getWindspeedDouble() != null) {
+						beaufortToKnots = weather.getWindspeedDouble();
+					}
+					else {
+						beaufortToKnots = weather.getWindspeedLong();
+					}
+				}
+					
 				
 				//Calculates the productivity of solar panel
 				productivitySolar = 100 - Math.abs(25 - Double.parseDouble(temperatureDField.getText())) * 4;// 	
 				
 				//Calculates the productivity of wind
+				
 				if(weather.getWindspeedDouble() != null) {
-					double mph = weather.getWindspeedDouble() * 1.15077945; //knots to mph
+					double mph = beaufortToKnots * 1.15077945; //knots to mph
 					productivityWind = 100 - Math.abs(31 - mph) * 3.22580645161; 
 				}
 				else {
-					double mph = weather.getWindspeedLong() * 1.15077945; //knots to mph
+					double mph = beaufortToKnots * 1.15077945; //knots to mph
 					productivityWind =  100 - Math.abs(31 - mph) * 3.22580645161; 
 				}
 				
-				System.out.println(productivityWind);
-				System.out.println(productivitySolar);
-				
-				if(productivitySolar < 80) {
-					System.out.println("Χαμηλη παραγωγικοτητα φωτοβολταικου");
+				//PRODROME EDW ALLA3E TA GAMHSE TA THN MANA! :)
+				if(data[i][3] > 70 && weather.getWeatherCondition().contains("Clear")) {
+					System.out.println("Παραγωγικοτητα αιολικου: " + productivityWind);
+					System.out.println("Παραγωγικοτητα φωτοβολταικου: " + productivitySolar);
+					
+					if((Double.parseDouble(temperatureDField.getText())) <23){
+						
+						if(productivitySolar >= productivityWind) {
+							System.out.println("Λειτουργει το φωτοβολταικο με μειωμενη παραγωγικοτητα: "+ String.format("%.1f", productivitySolar) + "%" + " λογω χαμηλης θερμοκρασιας");
+						}
+						else {
+							beaufortCheck();
+						}
+					}
+					else if((Double.parseDouble(temperatureDField.getText())) <= 28) {
+						if(productivitySolar >= productivityWind) {
+							System.out.println("Λειτουργει αποδοτικα το φωτοβολταικο και η παραγωγικοτητα του ειναι: " + String.format("%.1f", productivitySolar) + "%");
+						}
+						else {
+							beaufortCheck();
+						}
+					}
+					else if(Double.parseDouble(temperatureDField.getText()) < 50) {
+						if(productivitySolar >= productivityWind) {
+							System.out.println("Λειτουργει το φωτοβολταικο με μειωμενη παραγωγικοτητα: "+ String.format("%.1f", productivitySolar) + "%" + " λογω χαμηλης θερμοκρασιας");
+						}
+						else {
+							beaufortCheck();
+						}
+					}
+					else {
+						System.out.println("Τερματισμος φωτοβολταικου.");
+						beaufortCheck();
+					}
 				}
-				else{
-					System.out.println("Υψηλη/Μεγιστη παραγωγικοτητα φωτοβολταικου");
-				}
-				
-				if(productivityWind < 80) {
-					System.out.println("Χαμηλη παραγωγικοτητα αιολικου");
-				}
-				else{
-					System.out.println("Υψηλη/Μεγιστη παραγωγικοτητα αιολικου");
-				}
-				
-				
-				
+				else {
+					beaufortCheck();
+				}	
 			}	
 		};
 		// schedule the task to run starting now and then every 1 minute...
@@ -281,7 +316,20 @@ public class DataPage extends JFrame {
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		this.setIconImage(new ImageIcon(this.getClass().getResource("/Photos/logo.png")).getImage());
 	}	
 
+	public void beaufortCheck() {
+		//PRODROME EDW ALLA3E TA GAMHSETA THN MANA! :)
+		System.out.println("Παραγωγικοτητα αιολικου: " + productivityWind);
+		System.out.println("Παραγωγικοτητα φωτοβολταικου: " + productivitySolar);
+		if (Double.parseDouble(beaufortSField.getText()) < 6) {
+			System.out.println("Λειτουργει η ανεμογεννητρια. Χαμηλη παραγωγικοτητα: " + String.format("%.1f", productivityWind) + "%");
+		}
+		else if (Double.parseDouble(beaufortSField.getText()) <= 9) {
+			System.out.println("Λειτουργει αποδοτικά η ανεμογεννητρια και η παραγωγικοτητα της ειναι: " + String.format("%.1f", productivityWind) + "%");
+		}
+		else {
+			System.out.println("Τερματισμος ανεμογεννητριας");
+		}
+	}
 }
