@@ -1,18 +1,16 @@
 package Code;
 
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.*;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import java.awt.GridLayout;
+import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -54,6 +52,11 @@ public class DataPage extends JFrame {
 	private JLabel beaufortDLabel;
 	private JTextField beaufortDField;
 	
+	private JPanel statusPanel;
+	private JLabel productivityLabel;
+	private JTextField productivityField;
+	private JLabel efficiencyLabel;
+	private JTextField efficiencyField;
 	
 	double data[][] = null;
 	double beaufortToKnots;
@@ -63,6 +66,8 @@ public class DataPage extends JFrame {
 	public DataPage()
 	{
 		generalPanel = new JPanel(null);
+		
+		//API Panel Creation Panel
 		apiPanel = new JPanel();
 		apiLabel = new JLabel("API Data");
 		temperatureLabel = new JLabel("Temperature:");
@@ -81,6 +86,7 @@ public class DataPage extends JFrame {
 		weatherCondField = new JTextField(7);
 		weatherCondField.setEditable(false);
 		
+		//Sensors Panel Creation Panel
 		sensorsLabel = new JLabel("Sensors Data");
 		sensorsPanel = new JPanel();
 		temperatureSLabel = new JLabel("Temperature:");
@@ -96,6 +102,7 @@ public class DataPage extends JFrame {
 		brightnessSField = new JTextField(7);
 		brightnessSField.setEditable(false);
 		
+		//Decision Panel Creation Panel
 		decisionLabel = new JLabel("Decision Data");
 		decisionPanel = new JPanel();
 		temperatureDLabel = new JLabel("Temperature:");
@@ -107,6 +114,15 @@ public class DataPage extends JFrame {
 		beaufortDLabel = new JLabel("Beaufort:");
 		beaufortDField = new JTextField(7);
 		beaufortDField.setEditable(false);
+		
+		//Status Panel Creation Panel
+		statusPanel = new JPanel();
+		productivityLabel = new JLabel("Productivity");
+		productivityField = new JTextField(5);
+		productivityField.setEditable(false);
+		efficiencyLabel = new JLabel("Efficiency");
+		efficiencyField = new JTextField(5);
+		efficiencyField.setEditable(false);
 		
 		animationLabel = new JLabel();
 		animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
@@ -123,6 +139,7 @@ public class DataPage extends JFrame {
 		apiPanel.add(weatherCondField);
 		apiPanel.add(weatherDescLabel);
 		apiPanel.add(weatherDescField);
+		apiPanel.setBorder(BorderFactory.createLineBorder(Color.black));
 		
 		//Adding GUI Items to the Sensors Panel.
 		sensorsPanel.add(temperatureSLabel);
@@ -133,6 +150,8 @@ public class DataPage extends JFrame {
 		sensorsPanel.add(beaufortSField);
 		sensorsPanel.add(brightnessSLabel);
 		sensorsPanel.add(brightnessSField);
+		sensorsPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		
 		//Adding GUI Items to the Decision Panel.
 		decisionPanel.add(temperatureDLabel);
 		decisionPanel.add(temperatureDField);
@@ -140,25 +159,35 @@ public class DataPage extends JFrame {
 		decisionPanel.add(humidityDField);
 		decisionPanel.add(beaufortDLabel);
 		decisionPanel.add(beaufortDField);
+		decisionPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		
+		statusPanel.add(productivityLabel);
+		statusPanel.add(productivityField);
+		statusPanel.add(efficiencyLabel);
+		statusPanel.add(efficiencyField);
+		statusPanel.setBorder(BorderFactory.createLineBorder(Color.black));
+		
 
 		//Adding GUI Items to the General Panel.
 		apiLabel.setBounds(420,5,50,25);
 		generalPanel.add(apiLabel);
-		apiPanel.setBounds(5,35,900,25);
+		apiPanel.setBounds(5,35,880,35);
 		generalPanel.add(apiPanel);
 		sensorsLabel.setBounds(405,90,80,25);
 		generalPanel.add(sensorsLabel);
-		sensorsPanel.setBounds(100,120,700,25);
+		sensorsPanel.setBounds(100,120,610,35);
 		generalPanel.add(sensorsPanel);
 		decisionLabel.setBounds(405,170,80,25);
 		generalPanel.add(decisionLabel);
-		decisionPanel.setBounds(200,200,500,25);
+		decisionPanel.setBounds(200,200,460,35);
 		generalPanel.add(decisionPanel);
-		
+		statusPanel.setBounds(250,380,80,105);
+		generalPanel.add(statusPanel);
+
 		animationLabel.setBounds(360,280,179,299);
 		generalPanel.add(animationLabel);
+		generalPanel.setBackground(new Color(245, 226, 171));
 
-		
 		
 		//Reading Sensor Data.
 		try {
@@ -172,13 +201,16 @@ public class DataPage extends JFrame {
             exc2.printStackTrace();
         }		
 		
+		
+		
+		
 		//Weather API Timer.
 		Timer timer = new Timer ();
 		TimerTask hourlyTask = new TimerTask () {
 		    @Override
 		    public void run () {
 		    	WeatherAPI weather = new WeatherAPI(); 
-		    	temperatureField.setText(Double.toString(Math.round(weather.getTemperature())));
+		    	temperatureField.setText(String.format("%.1f", weather.getTemperature()));
 				humidityField.setText(Long.toString(weather.getHumidity()));
 				beaufortField.setText(String.format("%.1g", weather.getBeaufort()));
 				weatherDescField.setText(weather.getWeatherDescription());
@@ -189,10 +221,9 @@ public class DataPage extends JFrame {
 		timer.schedule (hourlyTask, 01, 1000*60*2);
 		
 		
+		
 		//Sensor Timer
 		Timer timerS = new Timer ();
-		
-		
 		TimerTask timerTaskS = new TimerTask() {
 			int i=-1;
 			@Override
@@ -222,7 +253,6 @@ public class DataPage extends JFrame {
 				//Checking Deviation for temperature
 				if(Math.abs(Double.parseDouble(temperatureField.getText()) - Double.parseDouble(temperatureSField.getText())) > 3) {
 					temperatureDField.setText(temperatureSField.getText());
-					
 				}	
 				else
 					temperatureDField.setText(temperatureField.getText());
@@ -249,29 +279,32 @@ public class DataPage extends JFrame {
 				}
 					
 				
-				//Calculates the productivity of solar panel
-				productivitySolar = 100 - Math.abs(25 - Double.parseDouble(temperatureDField.getText())) * 4;// 	
 				
-				//Calculates the productivity of wind
-				
-				if(weather.getWindspeedDouble() != null) {
-					double mph = beaufortToKnots * 1.15077945; //knots to mph
-					productivityWind = 100 - Math.abs(31 - mph) * 3.22580645161; 
-				}
-				else {
-					double mph = beaufortToKnots * 1.15077945; //knots to mph
-					productivityWind =  100 - Math.abs(31 - mph) * 3.22580645161; 
-				}
-				
-				//PRODROME EDW ALLA3E TA GAMHSE TA THN MANA! :)
+				//Getting Decisions
 				if(data[i][3] > 70 && weather.getWeatherCondition().contains("Clear")) {
-					System.out.println("Παραγωγικοτητα αιολικου: " + productivityWind);
-					System.out.println("Παραγωγικοτητα φωτοβολταικου: " + productivitySolar);
+//					System.out.println("Productivity of wind turbine: " + productivityWind);
+//					System.out.println("Productivity of solar panel: " + productivitySolar);
+					
+					//Calculates the productivity of solar panel
+					productivitySolar = 100 - Math.abs(25 - Double.parseDouble(temperatureDField.getText())) * 4;// 	
+					
+//					//Calculates the productivity of wind
+//					if(weather.getWindspeedDouble() != null) {
+//						double mph = beaufortToKnots * 1.15077945; //knots to mph
+//						productivityWind = 100 - Math.abs(31 - mph) * 3.22580645161; 
+//					}
+//					else {
+//						double mph = beaufortToKnots * 1.15077945; //knots to mph
+//						productivityWind =  100 - Math.abs(31 - mph) * 3.22580645161; 
+//					}
 					
 					if((Double.parseDouble(temperatureDField.getText())) <23){
 						
 						if(productivitySolar >= productivityWind) {
-							System.out.println("Λειτουργει το φωτοβολταικο με μειωμενη παραγωγικοτητα: "+ String.format("%.1f", productivitySolar) + "%" + " λογω χαμηλης θερμοκρασιας");
+							System.out.println("Solar panel works with decreased productivity: "+ String.format("%.1f", productivitySolar) + "%" + " due to low temperature.");
+							productivityField.setText(String.format("%.1f", productivitySolar) + "%");
+							efficiencyField.setText("High");
+							animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\solar_panel.gif"));
 						}
 						else {
 							beaufortCheck();
@@ -279,7 +312,10 @@ public class DataPage extends JFrame {
 					}
 					else if((Double.parseDouble(temperatureDField.getText())) <= 28) {
 						if(productivitySolar >= productivityWind) {
-							System.out.println("Λειτουργει αποδοτικα το φωτοβολταικο και η παραγωγικοτητα του ειναι: " + String.format("%.1f", productivitySolar) + "%");
+							System.out.println("Solar panel works effectively with productivity: " + String.format("%.1f", productivitySolar) + "%");
+							productivityField.setText(String.format("%.1f", productivitySolar) + "%");
+							efficiencyField.setText("High");
+							animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\solar_panel.gif"));
 						}
 						else {
 							beaufortCheck();
@@ -287,18 +323,33 @@ public class DataPage extends JFrame {
 					}
 					else if(Double.parseDouble(temperatureDField.getText()) < 50) {
 						if(productivitySolar >= productivityWind) {
-							System.out.println("Λειτουργει το φωτοβολταικο με μειωμενη παραγωγικοτητα: "+ String.format("%.1f", productivitySolar) + "%" + " λογω χαμηλης θερμοκρασιας");
+							System.out.println("Solar panel works with decreased productivity: "+ String.format("%.1f", productivitySolar) + "%" + " due to high temperature.");
+							productivityField.setText(String.format("%.1f", productivitySolar) + "%");
+							efficiencyField.setText("Low");
+							animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\solar_panel.gif"));
 						}
 						else {
 							beaufortCheck();
 						}
 					}
 					else {
-						System.out.println("Τερματισμος φωτοβολταικου.");
+						System.out.println("Solar Panel has shutted down.");
 						beaufortCheck();
 					}
 				}
 				else {
+//					//Calculates the productivity of solar panel
+//					productivitySolar = 100 - Math.abs(25 - Double.parseDouble(temperatureDField.getText())) * 4;// 	
+					
+					//Calculates the productivity of wind
+					if(weather.getWindspeedDouble() != null) {
+						double mph = beaufortToKnots * 1.15077945; //knots to mph
+						productivityWind = 100 - Math.abs(31 - mph) * 3.22580645161; 
+					}
+					else {
+						double mph = beaufortToKnots * 1.15077945; //knots to mph
+						productivityWind =  100 - Math.abs(31 - mph) * 3.22580645161; 
+					}
 					beaufortCheck();
 				}	
 			}	
@@ -316,20 +367,27 @@ public class DataPage extends JFrame {
 		this.setResizable(false);
 		this.setLocationRelativeTo(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setIconImage(new ImageIcon(this.getClass().getResource("/Photos/logo.png")).getImage());
 	}	
 
 	public void beaufortCheck() {
 		//PRODROME EDW ALLA3E TA GAMHSETA THN MANA! :)
-		System.out.println("Παραγωγικοτητα αιολικου: " + productivityWind);
-		System.out.println("Παραγωγικοτητα φωτοβολταικου: " + productivitySolar);
+//		System.out.println("Productivity of wind turbine: " + productivityWind);
+//		System.out.println("Productivity of solar panel: " + productivitySolar);
 		if (Double.parseDouble(beaufortSField.getText()) < 6) {
-			System.out.println("Λειτουργει η ανεμογεννητρια. Χαμηλη παραγωγικοτητα: " + String.format("%.1f", productivityWind) + "%");
+			System.out.println("Wind turbine is working. Low productivity: " + String.format("%.1f", productivityWind) + "%");
+			productivityField.setText(String.format("%.1f", productivityWind) + "%");
+			efficiencyField.setText("Low");
+			animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
 		}
 		else if (Double.parseDouble(beaufortSField.getText()) <= 9) {
-			System.out.println("Λειτουργει αποδοτικά η ανεμογεννητρια και η παραγωγικοτητα της ειναι: " + String.format("%.1f", productivityWind) + "%");
+			System.out.println("Wind turbine is working effectively with productivity: " + String.format("%.1f", productivityWind) + "%");
+			productivityField.setText(String.format("%.1f", productivityWind) + "%");
+			efficiencyField.setText("High");
+			animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
 		}
 		else {
-			System.out.println("Τερματισμος ανεμογεννητριας");
+			System.out.println("Wind turbine has shutted down.");
 		}
 	}
 }
