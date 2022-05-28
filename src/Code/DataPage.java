@@ -371,7 +371,6 @@ public class DataPage extends JFrame {
 	}	
 
 	public void beaufortCheck() {
-		//PRODROME EDW ALLA3E TA GAMHSETA THN MANA! :)
 //		System.out.println("Productivity of wind turbine: " + productivityWind);
 //		System.out.println("Productivity of solar panel: " + productivitySolar);
 		if (Double.parseDouble(beaufortSField.getText()) < 6) {
