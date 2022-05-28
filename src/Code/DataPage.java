@@ -42,6 +42,8 @@ public class DataPage extends JFrame {
 	private JTextField humiditySField;
 	private JLabel beaufortSLabel;
 	private JTextField beaufortSField;
+	private JLabel brightnessSLabel;
+	private JTextField brightnessSField;
 	
 	private JLabel decisionLabel;
 	private JPanel decisionPanel;
@@ -52,7 +54,10 @@ public class DataPage extends JFrame {
 	private JLabel beaufortDLabel;
 	private JTextField beaufortDField;
 	
+	
 	double data[][] = null;
+	double productivitySolar;
+	double productivityWind;
 	
 	public DataPage()
 	{
@@ -86,6 +91,9 @@ public class DataPage extends JFrame {
 		beaufortSLabel = new JLabel("Beaufort:");
 		beaufortSField = new JTextField(7);
 		beaufortSField.setEditable(false);
+		brightnessSLabel = new JLabel("Brightness:");
+		brightnessSField = new JTextField(7);
+		brightnessSField.setEditable(false);
 		
 		decisionLabel = new JLabel("Decision Data");
 		decisionPanel = new JPanel();
@@ -122,7 +130,8 @@ public class DataPage extends JFrame {
 		sensorsPanel.add(humiditySField);
 		sensorsPanel.add(beaufortSLabel);
 		sensorsPanel.add(beaufortSField);
-		
+		sensorsPanel.add(brightnessSLabel);
+		sensorsPanel.add(brightnessSField);
 		//Adding GUI Items to the Decision Panel.
 		decisionPanel.add(temperatureDLabel);
 		decisionPanel.add(temperatureDField);
@@ -138,7 +147,7 @@ public class DataPage extends JFrame {
 		generalPanel.add(apiPanel);
 		sensorsLabel.setBounds(405,90,80,25);
 		generalPanel.add(sensorsLabel);
-		sensorsPanel.setBounds(200,120,500,25);
+		sensorsPanel.setBounds(100,120,700,25);
 		generalPanel.add(sensorsPanel);
 		decisionLabel.setBounds(405,170,80,25);
 		generalPanel.add(decisionLabel);
@@ -168,12 +177,9 @@ public class DataPage extends JFrame {
 		    @Override
 		    public void run () {
 		    	WeatherAPI weather = new WeatherAPI(); 
-		    	temperatureField.setText(String.format("%.1f", weather.getTemperature()));
+		    	temperatureField.setText(Double.toString(Math.round(weather.getTemperature())));
 				humidityField.setText(Long.toString(weather.getHumidity()));
-				if(weather.getWindspeedDouble() != null)
-					beaufortField.setText(String.format("%.1f", weather.getWindspeedDouble()));
-				if(weather.getWindspeedLong() != null)
-					beaufortField.setText(String.format("%.1f", weather.getWindspeedLong()));
+				beaufortField.setText(String.format("%.1g", weather.getBeaufort()));
 				weatherDescField.setText(weather.getWeatherDescription());
 				weatherCondField.setText(weather.getWeatherCondition());
 		    }
@@ -184,15 +190,21 @@ public class DataPage extends JFrame {
 		
 		//Sensor Timer
 		Timer timerS = new Timer ();
+		
+		
 		TimerTask timerTaskS = new TimerTask() {
 			int i=0;
 			@Override
 			public void run() {
+				
+		    	WeatherAPI weather = new WeatherAPI(); 
+				
 				if(i<data.length)
 				{
 					temperatureSField.setText(Double.toString(data[i][0]));
 					humiditySField.setText(Double.toString(data[i][1]));
 					beaufortSField.setText(Double.toString(data[i][2]));
+					brightnessSField.setText(Double.toString(data[i][3]));
 					i++;
 				}
 				try {
@@ -202,7 +214,7 @@ public class DataPage extends JFrame {
 				}
 				
 				/*-----------Fixing any deviations between API's Data and Sensors Data.-----------*/
-				
+							
 				//Checking Deviation for temperature
 				if(Math.abs(Double.parseDouble(temperatureField.getText()) - Double.parseDouble(temperatureSField.getText())) > 3)
 					temperatureDField.setText(temperatureSField.getText());
@@ -220,6 +232,39 @@ public class DataPage extends JFrame {
 					beaufortDField.setText(beaufortSField.getText());
 				else
 					beaufortDField.setText(beaufortField.getText());
+				
+				//Calculates the productivity of solar panel
+				productivitySolar = 100 - Math.abs(25 - Double.parseDouble(temperatureDField.getText())) * 4;// 	
+				
+				//Calculates the productivity of wind
+				if(weather.getWindspeedDouble() != null) {
+					double mph = weather.getWindspeedDouble() * 1.15077945; //knots to mph
+					productivityWind = 100 - Math.abs(31 - mph) * 3.22580645161; 
+				}
+				else {
+					double mph = weather.getWindspeedLong() * 1.15077945; //knots to mph
+					productivityWind =  100 - Math.abs(31 - mph) * 3.22580645161; 
+				}
+				
+				System.out.println(productivityWind);
+				System.out.println(productivitySolar);
+				
+				if(productivitySolar < 80) {
+					System.out.println("Χαμηλη παραγωγικοτητα φωτοβολταικου");
+				}
+				else{
+					System.out.println("Υψηλη/Μεγιστη παραγωγικοτητα φωτοβολταικου");
+				}
+				
+				if(productivityWind < 80) {
+					System.out.println("Χαμηλη παραγωγικοτητα αιολικου");
+				}
+				else{
+					System.out.println("Υψηλη/Μεγιστη παραγωγικοτητα αιολικου");
+				}
+				
+				
+				
 			}	
 		};
 		// schedule the task to run starting now and then every 1 minute...

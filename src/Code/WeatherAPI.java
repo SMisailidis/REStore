@@ -18,22 +18,21 @@ public class WeatherAPI {
 	private Long windspeedLong = null;
 	private String weatherDescription;
 	private String weatherCondition;
+	private double beaufort;
 	
 	public WeatherAPI()
 	{
 		//Our request to the API.
 		HttpRequest request = HttpRequest.newBuilder()
-		        .uri(URI.create("https://community-open-weather-map.p.rapidapi.com/weather?q=Thessaloniki%2Cgr&lat=0&lon=0&callback=(&id=2172797&lang=null&units=imperial&mode=xml%22"))
-		        .header("X-RapidAPI-Host", "community-open-weather-map.p.rapidapi.com")
-		        .header("X-RapidAPI-Key", "a6b18eafa2msh094b033f6db0655p183d8bjsn03bead2ce4c1")
-		        .method("GET", HttpRequest.BodyPublishers.noBody())
-		        .build();
+				.uri(URI.create("https://community-open-weather-map.p.rapidapi.com/weather?q=Thessaloniki%2Cgr&lat=0&lon=0&callback=(&id=2172797&lang=null&units=imperial&mode=xml"))
+				.header("X-RapidAPI-Host", "community-open-weather-map.p.rapidapi.com")
+				.header("X-RapidAPI-Key", "9f0d093868mshad2e6abd6d203e5p1c8c2djsn2a1c020c031e")
+				.method("GET", HttpRequest.BodyPublishers.noBody())
+				.build();
 		//Our response from the API.
 		HttpResponse<String> response;
 		
 		try {
-			
-			double beaufort;
 			
 			response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -44,7 +43,6 @@ public class WeatherAPI {
 			data = data.substring(1);			
 
 		    JSONObject jsonObject = (JSONObject) JSONValue.parse(data);
-		    
 		    //--We take temperature and humidity--//
 		    JSONObject takeKeyForTemp = (JSONObject) jsonObject.get("main");
 
@@ -64,14 +62,16 @@ public class WeatherAPI {
 		    if(takeKeyForWind.get("speed") instanceof Double)
 		    {
 		    	windspeedDouble = (Double) takeKeyForWind.get("speed");
-		    	beaufort = windspeedDouble = Math.cbrt(Math.pow(windspeedDouble / 1.625, 2));
+		    	beaufort = Math.cbrt(Math.pow(windspeedDouble / 1.625, 2));
 		    	windspeedLong = null;
 		    }
 		    else if(takeKeyForWind.get("speed") instanceof Long)
 		    {
 		    	windspeedLong = (Long) takeKeyForWind.get("speed");
-		    	windspeedDouble = null;
+		    	
 		    	beaufort = (long) Math.cbrt(Math.pow(windspeedLong / 1.625, 2));
+		    	
+		    	windspeedDouble = null;
 		    }
 		    
 		    //We take Weather description and weather condition--//
@@ -89,6 +89,14 @@ public class WeatherAPI {
 			e.printStackTrace();
 		} 
 		
+	}
+	
+	public double getBeaufort() {
+		return beaufort;
+	}
+
+	public void setBeaufort(double beaufort) {
+		this.beaufort = beaufort;
 	}
 
 	public double getTemperature() {

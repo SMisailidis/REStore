@@ -10,9 +10,9 @@ public class Main {
 	public static void main(String[] args)   {
 		
 		double data[][] = {
-				{34.2 , 35, 2},
-				{18.2, 70, 8},
-				{25.0, 37, 4}
+				{34.2 , 35, 2, 75},
+				{18.2, 70, 8, 100},
+				{25.0, 37, 4, 80}
 		};	
 		
 		try {
