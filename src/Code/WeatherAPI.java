@@ -41,7 +41,6 @@ public class WeatherAPI {
 			//We take the preffered data from the body of the response.
 			data = data.substring(1, data.length() -1);
 			data = data.substring(1);			
-
 		    JSONObject jsonObject = (JSONObject) JSONValue.parse(data);
 		    //--We take temperature and humidity--//
 		    JSONObject takeKeyForTemp = (JSONObject) jsonObject.get("main");
@@ -76,10 +75,8 @@ public class WeatherAPI {
 		    
 		    //We take Weather description and weather condition--//
 		    JSONArray weatherDetailsArray = (JSONArray) jsonObject.get("weather");
-		    
-		    String temp = weatherDetailsArray.toString();
-		    temp = temp.substring(1, temp.length() -1);
-		    
+		    String temp = weatherDetailsArray.get(0).toString();
+
 		    JSONObject weatherObject = (JSONObject) JSONValue.parse(temp);
 		    
 		    weatherDescription = (String) weatherObject.get("description");
