@@ -26,7 +26,7 @@ public class WeatherAPI {
 		HttpRequest request = HttpRequest.newBuilder()
 				.uri(URI.create("https://community-open-weather-map.p.rapidapi.com/weather?q=Thessaloniki%2Cgr&lat=0&lon=0&callback=(&id=2172797&lang=null&units=imperial&mode=xml"))
 				.header("X-RapidAPI-Host", "community-open-weather-map.p.rapidapi.com")
-				.header("X-RapidAPI-Key", "9f0d093868mshad2e6abd6d203e5p1c8c2djsn2a1c020c031e")
+				.header("X-RapidAPI-Key", "d1bff5668emsh10c5e8a441762a4p12e472jsn652da6301b1a")
 				.method("GET", HttpRequest.BodyPublishers.noBody())
 				.build();
 		//Our response from the API.

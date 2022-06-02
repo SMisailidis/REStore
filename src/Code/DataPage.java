@@ -126,9 +126,7 @@ public class DataPage extends JFrame {
 		efficiencyField.setEditable(false);
 		
 		animationLabel = new JLabel();
-		//animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\eclipse-workspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
-		//animationLabel.setIcon(new ImageIcon("C:\\Users\\User\\Desktop\\RESManager\\src\\Photos\\solar_panel.jpeg"));
-		//animationLabel.setIcon(new ImageIcon("C:\\Users\\Lenovo\\Desktop\\TSworkspace\\RESManager\\src\\Photos\\wind_turbine.gif"));
+		
 		
 		//Adding GUI Items to the API Panel.
 		apiPanel.add(temperatureLabel);
@@ -284,7 +282,7 @@ public class DataPage extends JFrame {
 				
 				
 				//Getting Decisions
-				if(data[i][3] > 70 && weather.getWeatherCondition().contains("Clear") || weather.getWeatherDescription().contains("broken clouds") || weather.getWeatherDescription().contains("scattered clouds")){
+				if(data[i][3] > 70 &&  weather.getWeatherCondition().contains("Clear") || weather.getWeatherDescription().contains("broken clouds") || weather.getWeatherDescription().contains("scattered clouds")){
 					
 					//Calculates the productivity of solar panel
 					productivitySolar = 100 - Math.abs(25 - Double.parseDouble(temperatureDField.getText())) * 4;// 	
